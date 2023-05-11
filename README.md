@@ -6,6 +6,10 @@ This is a Python program that uses OpenAI's ChatGPT to generate code review comm
 git diff master..branch | python3 chatgpt_code_reviewer.py
 ```
 
+
+https://github.com/lusob/ChatGPTCodeReviewer/assets/480507/5644683a-6c0e-4c0f-bad9-8610fade4de0
+
+
 ## Install
 
 ```
