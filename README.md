@@ -22,7 +22,6 @@ pip install -r requirements.txt
 
     ```
     export OPENAI_KEY=<YOUR_OPENAI_API_KEY>
-    export GITLAB_TOKEN=<YOUR_GITLAB_ACCESS_TOKEN>
     ```
 
 2. Pipe diffs directly into the program:
