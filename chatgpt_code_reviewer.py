@@ -4,6 +4,7 @@ import random
 import string
 import subprocess
 import sys
+import webbrowser
 
 import openai
 from tqdm import tqdm
@@ -138,7 +139,7 @@ def main():
     description = args.description if args.description else description
     output_file = create_html_output(title, description, changes)
     try:
-        subprocess.run(["google-chrome", output_file])
+        webbrowser.open(output_file)
     except Exception:
         print(f"Error running the web browser, you can try to open the outputfile: {output_file} manually")
         
