@@ -12,6 +12,13 @@ https://github.com/lusob/ChatGPTCodeReviewer/assets/480507/5644683a-6c0e-4c0f-ba
 
 ## Install
 
+1. Clone this repository and navigate to the ChatGPTCodeReviewer folder
+```
+git clone https://github.com/lusob/ChatGPTCodeReviewer.git
+cd ChatGPTCodeReviewer
+```
+
+2. Install Package
 ```
 pip install -r requirements.txt
 ```
