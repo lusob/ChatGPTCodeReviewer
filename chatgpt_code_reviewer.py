@@ -45,14 +45,25 @@ def generate_comment(diff, chatbot_context):
             "content": f"Make a code review of the changes made in this diff: {diff}",
         }
     )
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=chatbot_context,
-        max_tokens=500,
-        n=1,
-        stop=None,
-        temperature=0.7,
-    )
+    # Retry up to three times
+    retries = 3
+    for attempt in range(retries):
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=chatbot_context,
+                n=1,
+                stop=None,
+                temperature=0.3,
+            )
+
+        except Exception as e:
+            if attempt == retries - 1:
+                print(f"attempt: {attempt}, retries: {retries}")
+                raise e  # Raise the error if reached maximum retries
+            else:
+                print("OpenAI error occurred. Retrying...")
+                continue
 
     comment = response.choices[0].message.content
 
