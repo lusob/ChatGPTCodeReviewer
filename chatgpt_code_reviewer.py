@@ -2,7 +2,6 @@ import argparse
 import os
 import random
 import string
-import subprocess
 import sys
 import webbrowser
 
@@ -10,7 +9,7 @@ import openai
 from tqdm import tqdm
 
 openai.api_key = os.environ["OPENAI_KEY"]
-
+PROMPT_TEMPLATE = f"Good code reviews look at the change itself and how it fits into the codebase. They will look through the clarity of the title and description and “why” of the change. They cover the correctness of the code, test coverage, functionality changes, and confirm that they follow the coding guides and best practices. Make a good code review of the following diffs suggesting improvements and refactors based on best practices as SOLID concepts when it's worthy, please stop answering anything until I give you the diff in the conversation."
 def add_code_tags(text):
     # Find all the occurrences of text surrounded by backticks
     import re
@@ -72,17 +71,16 @@ def generate_comment(diff, chatbot_context):
     return comment, chatbot_context
 
 
-def create_html_output(title, description, changes):
+def create_html_output(title, description, changes, prompt):
     random_string = "".join(random.choices(string.ascii_letters, k=5))
     output_file_name = random_string + "-output.html"
 
     title_text = f"\nTitle: {title}" if title else ""
     description_text = f"\nDescription: {description}" if description else ""
-
     chatbot_context = [
         {
             "role": "user",
-            "content": f"Good code reviews look at the change itself and how it fits into the codebase. They will look through the clarity of the title and description and “why” of the change. They cover the correctness of the code, test coverage, functionality changes, and confirm that they follow the coding guides and best practices. Make a good code review of the following diffs suggesting improvements and refactors based on best practices as SOLID concepts when it's worthy, please stop answering anything until I give you the diff in the conversation.{title_text}{description_text}Good code reviews look at the change itself and how it fits into the codebase. They will look through the clarity of the title and description and “why” of the change. They cover the correctness of the code, test coverage, functionality changes, and confirm that they follow the coding guides and best practices. Make a good code review of the following diffs suggesting improvements and refactors based on best practices as SOLID concepts, please stop answering anything until I give you the diff in the conversation.{title_text}{description_text}.",
+            "content": f"{prompt}{title_text}{description_text}",
         }
     ]
 
@@ -128,21 +126,23 @@ def get_diff_changes_from_pipeline():
 
 
 def main():
-    title, description = None, None
+    title, description, prompt = None, None, None
     changes = get_diff_changes_from_pipeline()
     # Parse command line arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument("title", type=str, nargs='?', const='')
-    parser.add_argument("description", type=str, nargs='?', const='')
+    parser = argparse.ArgumentParser(description="AI code review script")
+    parser.add_argument("--title", type=str, help="Title of the diff")
+    parser.add_argument("--description", type=str, help="Description of the diff")
+    parser.add_argument("--prompt", type=str, help="Custom prompt for the AI")
     args = parser.parse_args()
     title = args.title if args.title else title
     description = args.description if args.description else description
-    output_file = create_html_output(title, description, changes)
+    prompt = args.prompt if args.prompt else PROMPT_TEMPLATE
+    output_file = create_html_output(title, description, changes, prompt)
     try:
         webbrowser.open(output_file)
     except Exception:
         print(f"Error running the web browser, you can try to open the outputfile: {output_file} manually")
-        
+
 if __name__ == "__main__":
     main()
 
